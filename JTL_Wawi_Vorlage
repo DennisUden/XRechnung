@@ -112,7 +112,7 @@ where
 {% assign i = i | Plus: 1 -%}
   <cac:InvoiceLine>
     <cbc:ID>{{ i }}</cbc:ID>
-    <cbc:InvoicedQuantity unitCode="C62">{% assign preis = position.NettopreisEinzel -%}{% assign menge = position.Menge -%}{% if preis < 0 -%}{% assign menge = menge | Times: -1 -%}{% endif -%}{{ menge }}</cbc:InvoicedQuantity>
+    <cbc:InvoicedQuantity unitCode="C62">{% assign preis = position.NettopreisEinzel -%}{% assign menge = position.Menge -%}{% if preis < 0 -%}{% assign menge = menge | Times: -1 -%}{% endif -%}{{ menge | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:InvoicedQuantity>
     <cbc:LineExtensionAmount currencyID="EUR">{{ position.NettoPreisGesamt | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:LineExtensionAmount>
     <cac:Item>
       <cbc:Name>{{ position.Bezeichnung | }}</cbc:Name>
