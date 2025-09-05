@@ -100,7 +100,7 @@
       <cbc:TaxAmount currencyID="EUR">{{ taxAmount | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxAmount>
       <cac:TaxCategory>
         <cbc:ID>S</cbc:ID>
-        <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% else %}19{% endif %}</cbc:Percent>
+        <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% endif %}</cbc:Percent>
         <cac:TaxScheme>
           <cbc:ID>VAT</cbc:ID>
         </cac:TaxScheme>
@@ -136,7 +136,7 @@
         </cac:SellersItemIdentification>
         <cac:ClassifiedTaxCategory>
           <cbc:ID>S</cbc:ID>
-          <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% else %}19{% endif %}</cbc:Percent>
+          <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% endif %}</cbc:Percent>
           <cac:TaxScheme>
             <cbc:ID>VAT</cbc:ID>
           </cac:TaxScheme>
