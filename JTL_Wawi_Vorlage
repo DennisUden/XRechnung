@@ -2,135 +2,149 @@
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cec="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
   <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
   <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
-<cbc:ID>{{ Vorgang.Rechnungsnummer }}</cbc:ID>
-<cbc:IssueDate>{{ Vorgang.Erstelldatum | Date: 'yyyy-MM-dd'  }}</cbc:IssueDate>
-<cbc:DueDate>{{ Vorgang.Erstelldatum | AddDays: Vorgang.Zahlungsziel | Date: 'yyyy-MM-dd' }}</cbc:DueDate>
-<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
-<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+  <cbc:ID>{{ Vorgang.Rechnungsnummer }}</cbc:ID>
+  <cbc:IssueDate>{{ Vorgang.Erstelldatum | Date: 'yyyy-MM-dd' }}</cbc:IssueDate>
+  <cbc:DueDate>{{ Vorgang.Erstelldatum | AddDays: Vorgang.Zahlungsziel | Date: 'yyyy-MM-dd' }}</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
 {% capture query -%}
-select cWertVarchar
-from kunde.tKundeEigenesFeld
-where 
-    kAttribut = 202 
-    and kkunde = {{ Vorgang.Auftrag.Kunde.InterneKundennummer }}
+    select cWertVarchar
+    from kunde.tKundeEigenesFeld
+    where 
+        kAttribut = 202 
+        and kkunde = {{ Vorgang.Auftrag.Kunde.InterneKundennummer }}
 {% endcapture -%}
 {% assign result = query | DirectQueryScalar -%}
 {% assign resultSize = result | Size -%}
-<cbc:BuyerReference>{% if resultSize > 0 -%}{{ result }}{% else -%}none{% endif -%}</cbc:BuyerReference>
-<cac:AccountingSupplierParty>
+  <cbc:BuyerReference>{% if resultSize > 0 -%}{{ result | Escape }}{% else -%}none{% endif -%}</cbc:BuyerReference>
+  <cac:AccountingSupplierParty>
     <cac:Party>
-        <cbc:EndpointID schemeID="EM">{{ Firma.EMail }}</cbc:EndpointID>
-        <cac:PartyName>
-            <cbc:Name>{{ Firma.Name }}</cbc:Name>
-        </cac:PartyName>
-        <cac:PostalAddress>
-            <cbc:StreetName>{{ Firma.Straße }}</cbc:StreetName>
-            <cbc:CityName>{{ Firma.Ort }}</cbc:CityName>
-            <cbc:PostalZone>{{ Firma.PLZ }}</cbc:PostalZone>
-            <cac:Country>
-                <cbc:IdentificationCode>{{ Firma.Land.ISO }}</cbc:IdentificationCode>
-            </cac:Country>
-        </cac:PostalAddress>
-        <cac:PartyTaxScheme>
-            <cbc:CompanyID>{{ Firma.UstID }}</cbc:CompanyID>
-            <cac:TaxScheme>
-                <cbc:ID>VAT</cbc:ID>
-            </cac:TaxScheme>
-        </cac:PartyTaxScheme>
-        <cac:PartyTaxScheme>
-            <cbc:CompanyID>{{ Firma.Steuernummer }}</cbc:CompanyID>
-            <cac:TaxScheme>
-                <cbc:ID>FC</cbc:ID>
-            </cac:TaxScheme>
-        </cac:PartyTaxScheme>
-        <cac:PartyLegalEntity>
-            <cbc:RegistrationName>{{ Firma.Name }}</cbc:RegistrationName>
-        </cac:PartyLegalEntity>
-        <cac:Contact>
-            <cbc:Name>{{ Firma.Unternehmer }}</cbc:Name>
-            <cbc:Telephone>{{ Firma.Telefon }}</cbc:Telephone>
-            <cbc:ElectronicMail>{{ Firma.EMail }}</cbc:ElectronicMail>
-        </cac:Contact>
-    </cac:Party>
-</cac:AccountingSupplierParty>
-<cac:AccountingCustomerParty>
-    <cac:Party>
-        <cbc:EndpointID schemeID="EM">{{ Vorgang.Auftrag.Rechnungsadresse.EMail }}</cbc:EndpointID>
-        <cac:PartyName>
-            <cbc:Name>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name }}{% endif -%}</cbc:Name>
-        </cac:PartyName>
-        <cac:PostalAddress>
-            <cbc:StreetName>{{ Vorgang.Auftrag.Rechnungsadresse.Straße }}</cbc:StreetName>
-            <cbc:CityName>{{ Vorgang.Auftrag.Rechnungsadresse.Ort }}</cbc:CityName>
-            <cbc:PostalZone>{{ Vorgang.Auftrag.Rechnungsadresse.PLZ }}</cbc:PostalZone>
-            <cac:Country>
-                <cbc:IdentificationCode>{{ Vorgang.Auftrag.Rechnungsadresse.Land.ISO }}</cbc:IdentificationCode>
-            </cac:Country>
-        </cac:PostalAddress>
-        <cac:PartyLegalEntity>
-            <cbc:RegistrationName>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name }}{% endif -%}</cbc:RegistrationName>
-        </cac:PartyLegalEntity>
-    </cac:Party>
-</cac:AccountingCustomerParty>
-<cac:Delivery>
-    <cbc:ActualDeliveryDate>{{ Vorgang.Erstelldatum | Date: 'yyyy-MM-dd'}}</cbc:ActualDeliveryDate>
-</cac:Delivery>
-<cac:PaymentMeans>
-<cbc:PaymentMeansCode>57</cbc:PaymentMeansCode>
-<cac:PayeeFinancialAccount>
-<cbc:ID>{{ Firma.Bankverbindung.IBAN }}</cbc:ID>
-<cbc:Name>{{ Firma.Bankverbindung.Kontoinhaber }}</cbc:Name>
-<cac:FinancialInstitutionBranch>
-<cbc:ID>{{ Firma.Bankverbindung.BIC }}</cbc:ID>
-</cac:FinancialInstitutionBranch>
-</cac:PayeeFinancialAccount>
-</cac:PaymentMeans>
-<cac:TaxTotal>
-    <cbc:TaxAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.MwStGesamt | FormatNumber: 'N2' , 'en-US' | Replace: ',' }}</cbc:TaxAmount>
-    <cac:TaxSubtotal>
-        <cbc:TaxableAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.NettopreisGesamt | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:TaxableAmount>
-        <cbc:TaxAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.MwStGesamt | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxAmount>
-        <cac:TaxCategory>
-            <cbc:ID>S</cbc:ID>
-            <cbc:Percent>{{ Vorgang.Auftrag.Positionen.MwStGesamt |DividedBy: Vorgang.Auftrag.Positionen.NettopreisGesamt | Times: 100 | FormatNumber: 'N2', 'en-US'| Replace: ',' }}</cbc:Percent>
-            <cac:TaxScheme>
-                <cbc:ID>VAT</cbc:ID>
-            </cac:TaxScheme>
-        </cac:TaxCategory>
-    </cac:TaxSubtotal>
-</cac:TaxTotal>
-<cac:LegalMonetaryTotal>
-    <cbc:LineExtensionAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.NettopreisGesamt | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:LineExtensionAmount>
-    <cbc:TaxExclusiveAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.NettopreisGesamt  | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:TaxExclusiveAmount>
-    <cbc:TaxInclusiveAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.BruttopreisGesamt | FormatNumber: 'N2', 'en-US'  | Replace: ','}}</cbc:TaxInclusiveAmount>
-    <cbc:AllowanceTotalAmount currencyID="EUR">0.00</cbc:AllowanceTotalAmount>
-    <cbc:PrepaidAmount currencyID="EUR">{% assign totalPayment = 0.00 -%}{% for Zahlungen in Vorgang.Zahlungen -%}{% assign totalPayment = totalPayment | Plus: Zahlungen.Betrag -%}{% endfor -%}{{ totalPayment | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:PrepaidAmount>
-    <cbc:PayableAmount currencyID="EUR">{{ Vorgang.Auftrag.Positionen.BruttopreisGesamt | Minus: totalPayment | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:PayableAmount>
-</cac:LegalMonetaryTotal>
-{% assign i = 0 -%}
-{% for position in Vorgang.Auftrag.Positionen -%}
-{% assign i = i | Plus: 1 -%}
-  <cac:InvoiceLine>
-    <cbc:ID>{{ i }}</cbc:ID>
-    <cbc:InvoicedQuantity unitCode="C62">{% assign preis = position.NettopreisEinzel -%}{% assign menge = position.Menge -%}{% if preis < 0 -%}{% assign menge = menge | Times: -1 -%}{% endif -%}{{ menge | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:InvoicedQuantity>
-    <cbc:LineExtensionAmount currencyID="EUR">{{ position.NettoPreisGesamt | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:LineExtensionAmount>
-    <cac:Item>
-      <cbc:Name>{{ position.Bezeichnung | }}</cbc:Name>
-      <cac:SellersItemIdentification>
-        <cbc:ID>{% if position.Artikelnummer != '' -%}{{ position.Artikelnummer }}{% else -%}Versand{% endif -%}</cbc:ID>
-      </cac:SellersItemIdentification>
-      <cac:ClassifiedTaxCategory>
-        <cbc:ID>S</cbc:ID>
-        <cbc:Percent>{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz }}</cbc:Percent>
+      <cbc:EndpointID schemeID="EM">{{ Firma.EMail | Escape }}</cbc:EndpointID>
+      <cac:PartyName>
+        <cbc:Name>{{ Firma.Name | Escape }}</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>{{ Firma.Straße | Escape }}</cbc:StreetName>
+        <cbc:CityName>{{ Firma.Ort | Escape }}</cbc:CityName>
+        <cbc:PostalZone>{{ Firma.PLZ }}</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>{{ Firma.Land.ISO }}</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>{{ Firma.UstID }}</cbc:CompanyID>
         <cac:TaxScheme>
           <cbc:ID>VAT</cbc:ID>
         </cac:TaxScheme>
-      </cac:ClassifiedTaxCategory>
-    </cac:Item>
-    <cac:Price>
-      <cbc:PriceAmount currencyID="EUR">{% if preis < 0 -%}{% assign preis = preis | Times: -1 -%}{% endif -%}{{ preis | FormatNumber: 'N2', 'en-US' | Replace: ','}}</cbc:PriceAmount>
-    </cac:Price>
-  </cac:InvoiceLine>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>{{ Firma.Steuernummer }}</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>FC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>{{ Firma.Name | Escape }}</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>{{ Firma.Unternehmer | Escape }}</cbc:Name>
+        <cbc:Telephone>{{ Firma.Telefon }}</cbc:Telephone>
+        <cbc:ElectronicMail>{{ Firma.EMail | Escape }}</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="EM">{{ Vorgang.Auftrag.Rechnungsadresse.EMail | Escape }}</cbc:EndpointID>
+      <cac:PartyName>
+        <cbc:Name>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma | Escape }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name | Escape }}{% endif -%}</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>{{ Vorgang.Auftrag.Rechnungsadresse.Straße | Escape }}</cbc:StreetName>
+        <cbc:CityName>{{ Vorgang.Auftrag.Rechnungsadresse.Ort | Escape }}</cbc:CityName>
+        <cbc:PostalZone>{{ Vorgang.Auftrag.Rechnungsadresse.PLZ }}</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>{{ Vorgang.Auftrag.Rechnungsadresse.Land.ISO }}</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma | Escape }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name | Escape }}{% endif -%}</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:Delivery>
+    <cbc:ActualDeliveryDate>{{ Vorgang.Erstelldatum | Date: 'yyyy-MM-dd' }}</cbc:ActualDeliveryDate>
+  </cac:Delivery>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>57</cbc:PaymentMeansCode>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>{{ Firma.Bankverbindung.IBAN }}</cbc:ID>
+      <cbc:Name>{{ Firma.Bankverbindung.Kontoinhaber | Escape }}</cbc:Name>
+      <cac:FinancialInstitutionBranch>
+        <cbc:ID>{{ Firma.Bankverbindung.BIC }}</cbc:ID>
+      </cac:FinancialInstitutionBranch>
+    </cac:PayeeFinancialAccount>
+  </cac:PaymentMeans>
+{% assign positionSum = 0.00 -%}
+{% for position in Vorgang.Auftrag.Positionen -%}
+{% assign positionSum = positionSum | Plus: position.NettoPreisGesamt -%}
+{% endfor -%}
+{% assign netTotal = Vorgang.Auftrag.Positionen.NettopreisGesamt -%}
+{% assign diff = netTotal | Minus: positionSum -%}
+{% assign taxAmount = Vorgang.Auftrag.Positionen.MwStGesamt -%}
+{% assign totalWithTax = netTotal | Plus: taxAmount -%}
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="EUR">{{ taxAmount | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="EUR">{{ netTotal | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="EUR">{{ taxAmount | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% else %}19{% endif %}</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="EUR">{{ netTotal | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="EUR">{{ netTotal | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="EUR">{{ totalWithTax | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:TaxInclusiveAmount>
+    <cbc:AllowanceTotalAmount currencyID="EUR">0.00</cbc:AllowanceTotalAmount>
+    <cbc:PrepaidAmount currencyID="EUR">{% assign totalPayment = 0.00 %}{% for Zahlungen in Vorgang.Zahlungen %}{% assign totalPayment = totalPayment | Plus: Zahlungen.Betrag %}{% endfor %}{{ totalPayment | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:PrepaidAmount>
+    <cbc:PayableAmount currencyID="EUR">{{ totalWithTax | Minus: totalPayment | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+{% assign i = 0 -%}
+{% for position in Vorgang.Auftrag.Positionen -%}
+{% assign i = i | Plus: 1 -%}
+{% if forloop.first -%}
+{% assign adjustedNetto = position.NettoPreisGesamt | Plus: diff -%}
+{% assign adjustedPrice = position.NettopreisEinzel | Plus: diff -%}
+{% else -%}
+{% assign adjustedNetto = position.NettoPreisGesamt -%}
+{% assign adjustedPrice = position.NettopreisEinzel -%}
+{% endif -%}
+    <cac:InvoiceLine>
+      <cbc:ID>{{ i }}</cbc:ID>
+      <cbc:InvoicedQuantity unitCode="C62">{% assign menge = position.Menge %}{% if adjustedPrice < 0 %}{% assign menge = menge | Times: -1 %}{% endif %}{{ menge | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:InvoicedQuantity>
+      <cbc:LineExtensionAmount currencyID="EUR">{{ adjustedNetto | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:LineExtensionAmount>
+      <cac:Item>
+        <cbc:Name>{{ position.Bezeichnung | Escape }}</cbc:Name>
+        <cac:SellersItemIdentification>
+          <cbc:ID>{% if position.Artikelnummer != '' %}{{ position.Artikelnummer | Escape }}{% else %}Versand{% endif %}</cbc:ID>
+        </cac:SellersItemIdentification>
+        <cac:ClassifiedTaxCategory>
+          <cbc:ID>S</cbc:ID>
+          <cbc:Percent>{% if Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz %}{{ Vorgang.Auftrag.Positionen.ErstesObjekt.MwStSatz | FormatNumber: 'N0', 'en-US' }}{% else %}19{% endif %}</cbc:Percent>
+          <cac:TaxScheme>
+            <cbc:ID>VAT</cbc:ID>
+          </cac:TaxScheme>
+        </cac:ClassifiedTaxCategory>
+      </cac:Item>
+      <cac:Price>
+        <cbc:PriceAmount currencyID="EUR">{% if adjustedPrice < 0 %}{% assign adjustedPrice = adjustedPrice | Times: -1 %}{% endif %}{{ adjustedPrice | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:PriceAmount>
+      </cac:Price>
+    </cac:InvoiceLine>
 {% endfor -%}
 </Invoice>
-
