@@ -16,16 +16,16 @@
 {% endcapture -%}
 {% assign result = query | DirectQueryScalar -%}
 {% assign resultSize = result | Size -%}
-  <cbc:BuyerReference>{% if resultSize > 0 -%}{{ result | Escape }}{% else -%}none{% endif -%}</cbc:BuyerReference>
+  <cbc:BuyerReference>{% if resultSize > 0 -%}{{ result }}{% else -%}none{% endif -%}</cbc:BuyerReference>
   <cac:AccountingSupplierParty>
     <cac:Party>
-      <cbc:EndpointID schemeID="EM">{{ Firma.EMail | Escape }}</cbc:EndpointID>
+      <cbc:EndpointID schemeID="EM">{{ Firma.EMail }}</cbc:EndpointID>
       <cac:PartyName>
-        <cbc:Name>{{ Firma.Name | Escape }}</cbc:Name>
+        <cbc:Name>{{ Firma.Name }}</cbc:Name>
       </cac:PartyName>
       <cac:PostalAddress>
-        <cbc:StreetName>{{ Firma.Straße | Escape }}</cbc:StreetName>
-        <cbc:CityName>{{ Firma.Ort | Escape }}</cbc:CityName>
+        <cbc:StreetName>{{ Firma.Straße }}</cbc:StreetName>
+        <cbc:CityName>{{ Firma.Ort }}</cbc:CityName>
         <cbc:PostalZone>{{ Firma.PLZ }}</cbc:PostalZone>
         <cac:Country>
           <cbc:IdentificationCode>{{ Firma.Land.ISO }}</cbc:IdentificationCode>
@@ -44,31 +44,31 @@
         </cac:TaxScheme>
       </cac:PartyTaxScheme>
       <cac:PartyLegalEntity>
-        <cbc:RegistrationName>{{ Firma.Name | Escape }}</cbc:RegistrationName>
+        <cbc:RegistrationName>{{ Firma.Name }}</cbc:RegistrationName>
       </cac:PartyLegalEntity>
       <cac:Contact>
-        <cbc:Name>{{ Firma.Unternehmer | Escape }}</cbc:Name>
+        <cbc:Name>{{ Firma.Unternehmer }}</cbc:Name>
         <cbc:Telephone>{{ Firma.Telefon }}</cbc:Telephone>
-        <cbc:ElectronicMail>{{ Firma.EMail | Escape }}</cbc:ElectronicMail>
+        <cbc:ElectronicMail>{{ Firma.EMail }}</cbc:ElectronicMail>
       </cac:Contact>
     </cac:Party>
   </cac:AccountingSupplierParty>
   <cac:AccountingCustomerParty>
     <cac:Party>
-      <cbc:EndpointID schemeID="EM">{{ Vorgang.Auftrag.Rechnungsadresse.EMail | Escape }}</cbc:EndpointID>
+      <cbc:EndpointID schemeID="EM">{{ Vorgang.Auftrag.Rechnungsadresse.EMail }}</cbc:EndpointID>
       <cac:PartyName>
-        <cbc:Name>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma | Escape }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name | Escape }}{% endif -%}</cbc:Name>
+        <cbc:Name>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name }}{% endif -%}</cbc:Name>
       </cac:PartyName>
       <cac:PostalAddress>
-        <cbc:StreetName>{{ Vorgang.Auftrag.Rechnungsadresse.Straße | Escape }}</cbc:StreetName>
-        <cbc:CityName>{{ Vorgang.Auftrag.Rechnungsadresse.Ort | Escape }}</cbc:CityName>
+        <cbc:StreetName>{{ Vorgang.Auftrag.Rechnungsadresse.Straße }}</cbc:StreetName>
+        <cbc:CityName>{{ Vorgang.Auftrag.Rechnungsadresse.Ort }}</cbc:CityName>
         <cbc:PostalZone>{{ Vorgang.Auftrag.Rechnungsadresse.PLZ }}</cbc:PostalZone>
         <cac:Country>
           <cbc:IdentificationCode>{{ Vorgang.Auftrag.Rechnungsadresse.Land.ISO }}</cbc:IdentificationCode>
         </cac:Country>
       </cac:PostalAddress>
       <cac:PartyLegalEntity>
-        <cbc:RegistrationName>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma | Escape }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name | Escape }}{% endif -%}</cbc:RegistrationName>
+        <cbc:RegistrationName>{% if Vorgang.Auftrag.Rechnungsadresse.Firma != '' -%}{{ Vorgang.Auftrag.Rechnungsadresse.Firma }}{% else -%}{{ Vorgang.Auftrag.Rechnungsadresse.Name }}{% endif -%}</cbc:RegistrationName>
       </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingCustomerParty>
@@ -79,7 +79,7 @@
     <cbc:PaymentMeansCode>57</cbc:PaymentMeansCode>
     <cac:PayeeFinancialAccount>
       <cbc:ID>{{ Firma.Bankverbindung.IBAN }}</cbc:ID>
-      <cbc:Name>{{ Firma.Bankverbindung.Kontoinhaber | Escape }}</cbc:Name>
+      <cbc:Name>{{ Firma.Bankverbindung.Kontoinhaber }}</cbc:Name>
       <cac:FinancialInstitutionBranch>
         <cbc:ID>{{ Firma.Bankverbindung.BIC }}</cbc:ID>
       </cac:FinancialInstitutionBranch>
@@ -130,9 +130,9 @@
       <cbc:InvoicedQuantity unitCode="C62">{% assign menge = position.Menge %}{% if adjustedPrice < 0 %}{% assign menge = menge | Times: -1 %}{% endif %}{{ menge | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:InvoicedQuantity>
       <cbc:LineExtensionAmount currencyID="EUR">{{ adjustedNetto | FormatNumber: 'N2', 'en-US' | Replace: ',' }}</cbc:LineExtensionAmount>
       <cac:Item>
-        <cbc:Name>{{ position.Bezeichnung | Escape }}</cbc:Name>
+        <cbc:Name>{{ position.Bezeichnung }}</cbc:Name>
         <cac:SellersItemIdentification>
-          <cbc:ID>{% if position.Artikelnummer != '' %}{{ position.Artikelnummer | Escape }}{% else %}Versand{% endif %}</cbc:ID>
+          <cbc:ID>{% if position.Artikelnummer != '' %}{{ position.Artikelnummer }}{% else %}Versand{% endif %}</cbc:ID>
         </cac:SellersItemIdentification>
         <cac:ClassifiedTaxCategory>
           <cbc:ID>S</cbc:ID>
